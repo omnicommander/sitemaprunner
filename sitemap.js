@@ -25,7 +25,7 @@ const run = async (customers) => {
 
         if(myCustomer.url){
             // console.log(myCustomer.url );
-			sitemapper(myCustomer);
+		 return	sitemapper(myCustomer);
 			
         }
 	}
@@ -37,13 +37,13 @@ const run = async (customers) => {
 const sitemapper = async (myCustomer) => {
     let url = myCustomer.url;
    
-	// console.log(`Axios call: ${url}...`);
+	console.log(`Axios call: ${url}...`);
 
     axios.get(`https://${url}/sitemap.xml`)
     .then(res => res.data)
     .then(xml => {
         parseXml(xml, (err, sitemapArray) => {
-            processXML(sitemapArray.urlset.url, myCustomer);
+			processXML(sitemapArray.urlset.url, myCustomer);
         });
     }).catch( 
         function(error) {
@@ -63,10 +63,11 @@ const processXML = async function(array, customer) {
 		let lastChange 	= "";
 		let assets 		= [];
 		const source 	= axios.CancelToken.source();
-	
+
 		const content = await axios.get( el.loc[0]+'/?format=json')
 			.then(res => res.data)
 			.then(data =>  {
+				
 				lastChange = data.collection.updatedOn;
 
 				if(data.collection.typeName === "index") {
@@ -124,11 +125,27 @@ const runner = () => {
 	Customer.find()
 		.then((customers) => {
 			if(customers) { 
+			
 				console.log(`${customers.length} customers to be processed.`);
-				run(customers).then(mongoose.disconnect());
+			
+				run(customers)
 			}
+
+		
+
 	  }).catch(err => console.log("Unable to reach database at the Moment"));
+
+	//   exit after 5 mins
+	  setTimeout(() => {
+		  console.log(`Connection closed.`);
+			mongoose.connection.close();
+	  }, 30000);
+
 };
+
+function getOut(){
+	return true;
+}
 
 runner();
 
