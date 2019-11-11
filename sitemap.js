@@ -143,9 +143,6 @@ const runner = () => {
 
 };
 
-function getOut(){
-	return true;
-}
 
 runner();
 
