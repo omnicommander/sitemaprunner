@@ -1,5 +1,5 @@
 {
-  "name": "SitemapUpdateService",
+  "name": "SitemapRunner",
   "author": "Scott Fleming <scott@omnicommander.com>",
   "version": "1.0.0",
   "description": "Update sitemap array within customers table. ",
