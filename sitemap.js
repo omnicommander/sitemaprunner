@@ -22,12 +22,10 @@ const run = async (customers) => {
             url: customer.url,
             email: customer.email
         }
-
-        if(myCustomer.url){
-            // console.log(myCustomer.url );
-		 return	sitemapper(myCustomer);
+		
+		 sitemapper(myCustomer);
 			
-        }
+        
 	}
 	
 
@@ -37,7 +35,7 @@ const run = async (customers) => {
 const sitemapper = async (myCustomer) => {
     let url = myCustomer.url;
    
-	console.log(`Axios call: ${url}...`);
+	// console.log(`Axios call: ${url}...`);
 
     axios.get(`https://${url}/sitemap.xml`)
     .then(res => res.data)
@@ -47,7 +45,7 @@ const sitemapper = async (myCustomer) => {
         });
     }).catch( 
         function(error) {
-            console.log(`Axios.get Error: ${error}`);
+            console.log(`Axios.get: ${error}`);
     });
 }
 
@@ -57,7 +55,7 @@ const processXML = async function(array, customer) {
     
     let filter = {url: customer.url}
 		
-	console.log(`Processing ${customer.url} `); 
+	// console.log(`Processing ${customer.url} `); 
 
 	let sitemap =  await array.map(async (el) => {
 		let lastChange 	= "";
@@ -98,7 +96,8 @@ const processXML = async function(array, customer) {
 	Promise.all(sitemap).then(results => {
         customer.sitemap = results.filter(res => res.content);
         let doc =  Customer.findOneAndUpdate( filter, {sitemap : customer.sitemap}, {new: true, upsert: true} ).then((object) => {
-			console.log(` ${customer.name} sitemap update completed.`);
+			console.log(`${customer.name} completed ${object.updatedAt.toISOString()}`);
+			
         });
 	});
 }
@@ -127,7 +126,7 @@ const runner = () => {
 			if(customers) { 
 			
 				console.log(`${customers.length} customers to be processed.`);
-			
+				
 				run(customers)
 			}
 
@@ -137,7 +136,7 @@ const runner = () => {
 
 	//   exit after 5 mins
 	  setTimeout(() => {
-		  console.log(`Connection closed.`);
+		  console.log(`Connection closed. Now exiting.`);
 			mongoose.connection.close();
 	  }, 30000);
 
